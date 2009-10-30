@@ -1,6 +1,7 @@
 module MailerTags
   include Radiant::Taggable
   include ActionView::Helpers::DateHelper
+  include ActionView::Helpers::TextHelper
 
   def config
     @config ||= begin
@@ -320,7 +321,7 @@ module MailerTags
 
   def prior_value(tag, tag_name=tag.attr['name'])
     if mail = tag.locals.page.last_mail
-      mail.data[tag_name] unless StringIO === mail.data[tag_name] or
+      h(mail.data[tag_name]) unless StringIO === mail.data[tag_name] or
         Tempfile === mail.data[tag_name]
     else
       nil
