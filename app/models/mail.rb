@@ -141,8 +141,8 @@ The following information was posted:
       :recipients => recipients,
       :from => from,
       :subject => subject,
-      :plain_body => @plain_body,
-      :html_body => @html_body,
+      :plain_body => convert_encoding(@plain_body),
+      :html_body => convert_encoding(@html_body),
       :cc => cc,
       :headers => headers,
       :files => files,
@@ -166,5 +166,18 @@ The following information was posted:
   
   def is_required_field?(field_name)
     @required && @required.any? {|name,_| name == field_name}
+  end
+
+  def convert_encoding(str)
+    # convert to cp850 in production
+    if str and RAILS_ENV == 'production'
+      begin
+         str = Iconv.iconv('UTF-8', 'CP850', str)
+      rescue Iconv::IllegalSequence
+         Rails.logger.warn("string #{str} of a mail message could not be processed")
+      end
+    end
+    
+    return str.to_s
   end
 end
