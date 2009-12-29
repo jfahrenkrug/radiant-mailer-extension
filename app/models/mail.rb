@@ -169,10 +169,10 @@ The following information was posted:
   end
 
   def convert_encoding(str)
-    # convert to cp850 in production
+    # convert from iso-8859-15 to utf-8 in production
     if str and RAILS_ENV == 'production'
       begin
-         str = Iconv.iconv('UTF-8', 'CP850', str)
+         str = Iconv.iconv('UTF-8', 'ISO-8859-15', str)
       rescue Iconv::IllegalSequence
          Rails.logger.warn("string #{str} of a mail message could not be processed")
       end
