@@ -80,7 +80,34 @@ class Mail
   end
 
   def recipients
-    config[:recipients] || data[config[:recipients_field]].split(/,/).collect{|e| e.strip}
+    res = config[:recipients]
+    
+    if !res
+      res = data[config[:recipients_field]].split(/,/).collect{|e| e.strip}
+      
+      if res and config[:recipients_check_class] and config[:recipients_check_name] 
+        clean_res = []
+        check_exceptions = config[:recipients_check_exceptions] || []
+        
+        if config[:recipients_check_name] =~ /^[\w|\-]+$/
+          res.each do |r|
+            begin
+              if check_exceptions.include?(r.downcase) or config[:recipients_check_class].constantize.find(:first, :conditions => ["lower(#{config[:recipients_check_name]}) LIKE ?", r.downcase])
+                clean_res << r
+              else
+                Rails.logger.warn("Attempt to use email that didn't pass the check: #{r}.")
+              end
+            rescue Exception => e
+              Rails.logger.warn("Attempt to use email that didn't pass the check: #{r}. Exception: #{e}")
+            end
+          end
+        end
+        
+        res = clean_res
+      end
+    end
+    
+    res
   end
 
   def reply_to
