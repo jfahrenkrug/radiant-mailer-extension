@@ -197,7 +197,7 @@ The following information was posted:
 
   def convert_encoding(str)
     # convert from iso-8859-15 to utf-8 in production
-    if str and RAILS_ENV == 'production'
+    if str and RAILS_ENV == 'production' and RUBY_VERSION < "1.9"
       begin
          str = Iconv.iconv('UTF-8', 'ISO-8859-15', str)
       rescue Iconv::IllegalSequence

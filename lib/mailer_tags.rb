@@ -91,6 +91,7 @@ module MailerTags
     }
   }
 </script>)
+    results.join('')
   end
 
   desc %{
@@ -107,7 +108,7 @@ module MailerTags
       raise_error_if_name_missing "mailer:#{type}", tag.attr
       value = (prior_value(tag) || tag.attr['value'])
       result = [%(<input type="#{type}" value="#{value}" #{mailer_attrs(tag)} />)]
-      add_required(result, tag)
+      add_required(result, tag).join('')
     end
   end
   
@@ -118,11 +119,13 @@ module MailerTags
     value = tag.attr['value'] || tag.attr['name']
     tag.attr.merge!("name" => "mailer-form-button")
     src = tag.attr['src'] || nil
+    result = nil
     if src
       result = [%(<input onclick="showSubmitPlaceholder();" type="image" src="#{src}" value="#{value}" #{mailer_attrs(tag)} />)]
     else
       result = [%(<input onclick="showSubmitPlaceholder();" type="submit" value="#{value}" #{mailer_attrs(tag)} />)]
     end
+    result.join('')
   end
 
   desc %{
@@ -134,6 +137,7 @@ module MailerTags
       results = %Q(<div id="submit-placeholder-part" style="display:none">)
       results << render_part(:submit_placeholder)
       results << %Q(</div>)
+      results.join('')
     end
   end
 
@@ -147,7 +151,7 @@ module MailerTags
     result = [%Q(<select #{mailer_attrs(tag, 'size' => '1')}>)]
     result << tag.expand
     result << "</select>"
-    add_required(result, tag)
+    add_required(result, tag).join('')
   end
 
   desc %{
@@ -157,7 +161,7 @@ module MailerTags
     result =  [%(<textarea #{mailer_attrs(tag, 'rows' => '5', 'cols' => '35')}>)]
     result << (prior_value(tag) || tag.expand)
     result << "</textarea>"
-    add_required(result, tag)
+    add_required(result, tag).join('')
   end
 
   desc %{
@@ -220,7 +224,7 @@ module MailerTags
           result << tag.expand
         end
     end
-    result
+    result.join('')
   end
   
   desc %{ 
