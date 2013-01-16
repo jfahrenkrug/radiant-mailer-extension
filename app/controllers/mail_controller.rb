@@ -14,6 +14,12 @@ class MailController < ApplicationController
 
     if mail.send
       redirect_url = !params[:mailer][:redirect_to].blank? ? params[:mailer][:redirect_to] : nil
+      
+      # adapt to https....
+      if redirect_url and request.ssl?
+        redirect_url.gsub!('http', 'https') if redirect_url =~ /http\:/
+      end
+      
       redirect_to ((request.post? ? redirect_url : config[:redirect_to]) || "#{@page.url}#mail_sent")
     else
       render :text => @page.render

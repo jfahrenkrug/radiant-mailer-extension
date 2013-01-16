@@ -16,6 +16,12 @@ module MailerProcess
 
       if mail.send
         redirect_url = !request.parameters[:mailer][:redirect_to].blank? ? request.parameters[:mailer][:redirect_to] : config[:redirect_to]
+        
+        # adapt to https....
+        if request.ssl?
+          redirect_url.gsub!('http', 'https') if redirect_url =~ /http\:/
+        end
+        
         response.redirect(redirect_url, "302 Found") and return if !redirect_url.blank?
         # Clear out the data and errors so the form isn't populated, but keep the success status around.
         self.last_mail.data.delete_if { true }
